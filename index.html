@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Craft | Enhanced Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffffff, #e6f7ff, #cceeff);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #003366;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 100, 255, 0.15);
+            width: 100%;
+            position: relative;
+            border: 2px solid #0066cc;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 100, 255, 0.3);
+            background: linear-gradient(to right, #0066cc, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+
+        .beta-badge {
+            position: absolute;
+            top: -10px;
+            right: -40px;
+            background: #0066cc;
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            transform: rotate(15deg);
+            animation: pulse 2s infinite;
+            border: 1px solid #0099ff;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: rotate(15deg) scale(1); }
+            50% { transform: rotate(15deg) scale(1.1); }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            color: #0066cc;
+        }
+
+        .header-controls {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            background: rgba(0, 102, 204, 0.1);
+            color: #0066cc;
+            border: 1px solid #0066cc;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            background: rgba(0, 102, 204, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .player-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 100, 255, 0.1);
+            border: 1px solid #0066cc;
+        }
+
+        .game-section {
+            flex: 3;
+            min-width: 800px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 100, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border: 1px solid #0066cc;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #0066cc;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 5px;
+        }
+
+        .player-info {
+            background: rgba(0, 102, 204, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px solid #0066cc;
+        }
+
+        /* Larger element containers */
+        .elements-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 10px;
+            border: 1px solid #0066cc;
+        }
+
+        /* Larger elements */
+        .element {
+            background: linear-gradient(135deg, #e6f2ff 0%, #cce5ff 100%);
+            padding: 20px 15px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 100, 255, 0.1);
+            user-select: none;
+            position: relative;
+            border: 1px solid #0066cc;
+            animation: float 3s ease-in-out infinite;
+            color: #003366;
+            font-size: 1.1rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .element:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 100, 255, 0.2);
+        }
+
+        .element:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .element.view-only {
+            cursor: pointer;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .element.clickable {
+            cursor: pointer;
+        }
+
+        .element.clickable:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #d9ebff 0%, #b3d9ff 100%);
+        }
+
+        .rarity-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #0066cc;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            border-radius: 10px;
+            font-weight: bold;
+            border: 1px solid #0099ff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #0066cc; }
+            to { box-shadow: 0 0 15px #0099ff; }
+        }
+
+        .common { background: linear-gradient(135deg, #e6f2ff, #cce5ff); }
+        .uncommon { background: linear-gradient(135deg, #d9ebff, #b3d9ff); }
+        .rare { background: linear-gradient(135deg, #cce5ff, #99ccff); }
+        .epic { background: linear-gradient(135deg, #b3d9ff, #80bfff); }
+        .legendary { background: linear-gradient(135deg, #99ccff, #66b3ff); }
+        .mythical { background: linear-gradient(45deg, #66b3ff, #3399ff); }
+        .dem-studios { background: linear-gradient(45deg, #003366, #0066cc); color: white; }
+        .studio-14592 { background: linear-gradient(45deg, #6600cc, #9900ff); color: white; }
+        .gold { background: linear-gradient(45deg, #ffd700, #ffcc00); color: #003366; }
+        .diamond { background: linear-gradient(45deg, #e6f9ff, #b3f0ff); color: #003366; }
+        .elemental { background: linear-gradient(45deg, #ccf2ff, #99e6ff); color: #003366; }
+
+        .discovery-area {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Make discovery boxes larger */
+        .discovery-box {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #0066cc;
+            transition: all 0.3s ease;
+        }
+
+        .discovery-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 100, 255, 0.15);
+        }
+
+        .combine-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .drop-zone {
+            width: 120px;
+            height: 120px;
+            border: 3px dashed #0066cc;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: #0066cc;
+            position: relative;
+            transition: all 0.3s ease;
+            animation: pulse-border 2s ease-in-out infinite;
+            background: rgba(0, 102, 204, 0.05);
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: #0066cc; }
+            50% { border-color: #0099ff; }
+        }
+
+        .drop-zone.active {
+            background: rgba(0, 102, 204, 0.1);
+            transform: scale(1.05);
+        }
+
+        .drop-zone .clear-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone .clear-btn:hover {
+            transform: scale(1.2);
+            background: rgba(255, 0, 0, 0.9);
+        }
+
+        .drop-zone.has-element .clear-btn {
+            display: block;
+        }
+
+        .combine-btn {
+            background: linear-gradient(to right, #0066cc, #0099ff);
+            color: white;
+            border: 1px solid #0066cc;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: auto;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { 
+                box-shadow: 0 5px 15px rgba(0, 100, 255, 0.2);
+                transform: translateY(0);
+            }
+            50% { 
+                box-shadow: 0 8px 25px rgba(0, 100, 255, 0.3);
+                transform: translateY(-3px);
+            }
+        }
+
+        .combine-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 100, 255, 0.3);
+            background: linear-gradient(to right, #0055aa, #0088ee);
+        }
+
+        .combine-btn:active {
+            transform: translateY(0) scale(0.95);
+        }
+
+        .result-area {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 10px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #0066cc;
+            transition: all 0.3s ease;
+        }
+
+        .result-area.success {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00cc00;
+            animation: success-pulse 0.5s ease-in-out;
+        }
+
+        @keyframes success-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .new-element {
+            font-size: 1.5rem;
+            color: #0066cc;
+            font-weight: bold;
+            margin-top: 10px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff3333;
+            animation: shake 0.5s ease-in-out;
+            color: #cc0000;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00cc00;
+            animation: bounce 0.5s ease-in-out;
+            color: #006600;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 102, 204, 0.05);
+            border-radius: 10px;
+            border: 1px solid #0066cc;
+        }
+
+        .stat-item {
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0066cc;
+            animation: count-up 1s ease-out;
+        }
+
+        @keyframes count-up {
+            from { 
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .player-actions {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 102, 204, 0.2);
+        }
+
+        button {
+            background: linear-gradient(to right, #0066cc, #0099ff);
+            color: white;
+            border: 1px solid #0066cc;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 100, 255, 0.2);
+            background: linear-gradient(to right, #0055aa, #0088ee);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #0066cc;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        /* Element Tooltip */
+        .element-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            max-width: 200px;
+            border: 1px solid #0066cc;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .element:hover .element-tooltip {
+            opacity: 1;
+        }
+
+        /* Special Effects */
+        .special-effects {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Rainbow Effect */
+        .rainbow-mode {
+            animation: rainbow 2s infinite;
+        }
+
+        @keyframes rainbow {
+            0% { background: linear-gradient(135deg, #ff0000, #ff9900); }
+            20% { background: linear-gradient(135deg, #ff9900, #ffff00); }
+            40% { background: linear-gradient(135deg, #ffff00, #00ff00); }
+            60% { background: linear-gradient(135deg, #00ff00, #0099ff); }
+            80% { background: linear-gradient(135deg, #0099ff, #6633ff); }
+            100% { background: linear-gradient(135deg, #6633ff, #ff0000); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .game-section, .player-section {
+                min-width: 100%;
+            }
+            
+            .header-controls {
+                position: static;
+                margin-top: 15px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Infinite Craft<span class="beta-badge">BETA</span></h1>
+            <p class="tagline">Combine elements to create the universe! No account needed.</p>
+            <div class="header-controls">
+                <button class="header-btn" id="export-btn">Export Data</button>
+                <button class="header-btn" id="reset-btn">Reset Progress</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <section class="player-section">
+                <h2 class="section-title">Player Progress</h2>
+                
+                <div class="player-info">
+                    <h3>Your Journey</h3>
+                    <p>Elements Discovered: <span id="elements-count">7</span></p>
+                    <p>Combinations Made: <span id="combinations-count">0</span></p>
+                    <p>Score: <span id="user-score">0</span></p>
+                    
+                    <div class="xp-bar-container">
+                        <div>XP: <span id="current-xp">0</span>/<span id="next-level-xp">100</span></div>
+                        <div class="xp-bar">
+                            <div class="xp-progress" id="xp-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="xp-text">Level <span id="player-level">1</span></div>
+                    </div>
+                    
+                    <div class="player-actions">
+                        <button id="save-btn">Save Progress</button>
+                        <button id="load-btn">Load Progress</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="game-section">
+                <h2 class="section-title">Infinite Craft</h2>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-elements">7</div>
+                        <div>Total Elements</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="user-elements">7</div>
+                        <div>Your Elements</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="combinations">0</div>
+                        <div>Combinations</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="session-score">0</div>
+                        <div>Session Score</div>
+                    </div>
+                </div>
+                
+                <div class="discovery-area">
+                    <div class="discovery-box">
+                        <h3 class="section-title">Your Elements (Drag or Click)</h3>
+                        <div class="elements-container" id="user-elements-container">
+                            <!-- Elements will be added here dynamically -->
+                        </div>
+                    </div>
+                    
+                    <div class="discovery-box">
+                        <h3 class="section-title">All Elements (View Only)</h3>
+                        <div class="elements-container" id="all-elements-container">
+                            <!-- Elements will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="combine-area">
+                    <div class="drop-zone" id="drop-zone-1">
+                        +
+                        <button class="clear-btn">X</button>
+                    </div>
+                    <div class="drop-zone" id="drop-zone-2">
+                        +
+                        <button class="clear-btn">X</button>
+                    </div>
+                    <button class="combine-btn" id="combine-btn">Combine!</button>
+                </div>
+                
+                <div class="result-area">
+                    <h3>Combination Result</h3>
+                    <div id="result-message">Drag two elements to the boxes above and click Combine!</div>
+                    <div id="new-element" class="new-element"></div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Dice Roll Section -->
+        <section class="dice-section">
+            <h2 class="section-title">Lucky Dice</h2>
+            <p>Roll the dice every 10 seconds for a chance to get special rewards!</p>
+            <div class="dice-container" id="dice-result">🎲</div>
+            <button class="dice-btn" id="dice-btn">Roll Dice</button>
+            <div class="dice-timer" id="dice-timer">Ready to roll!</div>
+            <div id="dice-cards-container">
+                <!-- Dice cards will appear here -->
+            </div>
+        </section>
+        
+        <footer>
+            <p>&copy; 2025 Dem Studios. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Game data with starter elements
+        const starterElements = [
+            { name: 'Earth', rarity: 'common', description: 'The solid ground beneath our feet' },
+            { name: 'Fire', rarity: 'common', description: 'The element of heat and energy' },
+            { name: 'Water', rarity: 'common', description: 'The source of all life' },
+            { name: 'Life', rarity: 'uncommon', description: 'The essence of living beings' },
+            { name: 'Energy', rarity: 'uncommon', description: 'Pure potential and power' },
+            { name: 'Dog', rarity: 'rare', description: 'Mans best friend' },
+            { name: 'Parrot', rarity: 'rare', description: 'A colorful talking bird' }
+        ];
+
+        // Combinations
+        const combinations = {
+            // Basic combinations
+            'Earth+Fire': { name: 'Lava', rarity: 'uncommon', description: 'Molten rock from deep within the earth' },
+            'Earth+Water': { name: 'Mud', rarity: 'common', description: 'Wet earth that sticks to everything' },
+            'Earth+Life': { name: 'Plant', rarity: 'uncommon', description: 'Living organisms that grow in soil' },
+            'Fire+Water': { name: 'Steam', rarity: 'common', description: 'Water vapor created by heat' },
+            'Fire+Life': { name: 'Phoenix', rarity: 'epic', description: 'A mythical bird that rises from ashes' },
+            'Water+Life': { name: 'Algae', rarity: 'uncommon', description: 'Simple aquatic organisms' },
+            'Energy+Earth': { name: 'Earthquake', rarity: 'rare', description: 'The shaking of the ground caused by energy release' },
+            'Energy+Fire': { name: 'Plasma', rarity: 'rare', description: 'The fourth state of matter, superheated gas' },
+            'Energy+Water': { name: 'Electric Eel', rarity: 'rare', description: 'A creature that generates electricity' },
+            'Dog+Earth': { name: 'Burrow', rarity: 'uncommon', description: 'A hole dug by an animal for shelter' },
+            'Dog+Water': { name: 'Swimming Dog', rarity: 'rare', description: 'A canine that enjoys the water' },
+            'Dog+Fire': { name: 'Hot Dog', rarity: 'epic', description: 'A delicious cooked sausage' },
+            
+            // Special Dem Studios combinations
+            'Dog+Parrot': { name: 'Dem Studios', rarity: 'dem-studios', description: 'The legendary game development studio!' },
+            'Mud+Dog': { name: '14592 Studios', rarity: 'studio-14592', description: 'A mysterious studio with magical powers' },
+            'Dem Studios+14592 Studios': { 
+                name: 'Ultimate Studio', 
+                rarity: 'dem-studios', 
+                description: 'The ultimate creative powerhouse',
+                specialEffect: 'rainbow'
+            },
+            
+            // More complex combinations
+            'Lava+Water': { name: 'Stone', rarity: 'common', description: 'Solidified molten rock' },
+            'Plant+Water': { name: 'Swamp', rarity: 'uncommon', description: 'A wetland ecosystem' },
+            'Plant+Fire': { name: 'Ash', rarity: 'common', description: 'The residue left after burning' },
+            'Stone+Fire': { name: 'Metal', rarity: 'uncommon', description: 'Mined and refined from ore' },
+            'Stone+Water': { name: 'Sand', rarity: 'common', description: 'Tiny particles of eroded rock' },
+            'Metal+Water': { name: 'Rust', rarity: 'common', description: 'Oxidized metal' },
+            'Metal+Fire': { name: 'Molten Metal', rarity: 'rare', description: 'Liquid metal at high temperatures' },
+            'Sand+Fire': { name: 'Glass', rarity: 'uncommon', description: 'Transparent material made from melted sand' },
+            
+            // Gold versions
+            'Earth+Gold': { name: 'Golden Earth', rarity: 'gold', description: 'Earth infused with golden energy' },
+            'Fire+Gold': { name: 'Golden Fire', rarity: 'gold', description: 'Fire that burns with golden flames' },
+            'Water+Gold': { name: 'Golden Water', rarity: 'gold', description: 'Water that flows with golden light' },
+            'Life+Gold': { name: 'Golden Life', rarity: 'gold', description: 'Life essence enhanced with gold' },
+            
+            // Diamond versions
+            'Earth+Diamond': { name: 'Diamond Earth', rarity: 'diamond', description: 'Earth crystallized into diamond form' },
+            'Fire+Diamond': { name: 'Diamond Fire', rarity: 'diamond', description: 'Fire that burns with diamond intensity' },
+            'Water+Diamond': { name: 'Diamond Water', rarity: 'diamond', description: 'Water that flows like liquid diamond' },
+            'Life+Diamond': { name: 'Diamond Life', rarity: 'diamond', description: 'Life essence crystallized into diamond' },
+            
+            // Elemental combinations
+            'Dragon+Super Gold Diamond': { name: 'Elemental', rarity: 'elemental', description: 'The ultimate elemental being, combining all forces of nature' },
+        };
+
+        // Dice rewards
+        const diceRewards = [
+            { name: 'Mystery Element', element: 'Mystery', rarity: 'rare', description: 'A mysterious element from the dice roll' },
+            { name: 'Double XP', type: 'xp', value: 50, description: 'Gain 50 XP' },
+            { name: 'Rare Element', element: 'Crystal', rarity: 'rare', description: 'A beautiful crystalline structure' },
+            { name: 'Bonus Points', type: 'points', value: 25, description: 'Get 25 bonus points' },
+            { name: 'Epic Element', element: 'Dragon', rarity: 'epic', description: 'A mythical fire-breathing creature' },
+            { name: 'Lucky Charm', type: 'charm', value: 1, description: 'Increases your chances of rare combinations' },
+            { name: 'Gold Element', element: 'Gold', rarity: 'gold', description: 'Pure elemental gold' },
+            { name: 'Diamond Element', element: 'Diamond', rarity: 'diamond', description: 'The hardest natural material' },
+            { name: 'Super Gold Diamond', element: 'Super Gold Diamond', rarity: 'diamond', description: 'An ultra-rare combination of gold and diamond' }
+        ];
+
+        // Game state
+        let gameState = {
+            userElements: [],
+            discoveredElements: [],
+            combinationsMade: 0,
+            score: 0,
+            xp: 0,
+            level: 1,
+            diceRolls: [],
+            lastDiceRoll: 0,
+            sessionScore: 0,
+            rainbowMode: false
+        };
+
+        // DOM elements
+        const userElementsContainer = document.getElementById('user-elements-container');
+        const allElementsContainer = document.getElementById('all-elements-container');
+        const dropZone1 = document.getElementById('drop-zone-1');
+        const dropZone2 = document.getElementById('drop-zone-2');
+        const combineBtn = document.getElementById('combine-btn');
+        const resultMessage = document.getElementById('result-message');
+        const newElementDisplay = document.getElementById('new-element');
+        const diceBtn = document.getElementById('dice-btn');
+        const diceTimer = document.getElementById('dice-timer');
+        const diceCardsContainer = document.getElementById('dice-cards-container');
+        const exportBtn = document.getElementById('export-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const loadBtn = document.getElementById('load-btn');
+
+        // Stats elements
+        const totalElementsEl = document.getElementById('total-elements');
+        const userElementsEl = document.getElementById('user-elements');
+        const combinationsEl = document.getElementById('combinations');
+        const sessionScoreEl = document.getElementById('session-score');
+        const elementsCountEl = document.getElementById('elements-count');
+        const combinationsCountEl = document.getElementById('combinations-count');
+        const userScoreEl = document.getElementById('user-score');
+        const currentXpEl = document.getElementById('current-xp');
+        const nextLevelXpEl = document.getElementById('next-level-xp');
+        const xpProgressEl = document.getElementById('xp-progress');
+        const playerLevelEl = document.getElementById('player-level');
+
+        // Initialize game
+        function initGame() {
+            loadGameState();
+            renderElements();
+            updateStats();
+            setupEventListeners();
+            updateDiceTimer();
+            
+            // Apply rainbow mode if active
+            if (gameState.rainbowMode) {
+                activateRainbowMode();
+            }
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Combine button
+            combineBtn.addEventListener('click', combineElements);
+            
+            // Dice button
+            diceBtn.addEventListener('click', rollDice);
+            
+            // Clear buttons for drop zones
+            dropZone1.querySelector('.clear-btn').addEventListener('click', () => clearDropZone(dropZone1));
+            dropZone2.querySelector('.clear-btn').addEventListener('click', () => clearDropZone(dropZone2));
+            
+            // Header buttons
+            exportBtn.addEventListener('click', exportGameData);
+            resetBtn.addEventListener('click', resetGame);
+            saveBtn.addEventListener('click', saveGameState);
+            loadBtn.addEventListener('click', loadGameState);
+            
+            // Drag and drop events
+            setupDragAndDrop();
+        }
+
+        // Set up drag and drop functionality
+        function setupDragAndDrop() {
+            // Allow drop
+            [dropZone1, dropZone2].forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('active');
+                });
+                
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('active');
+                });
+                
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('active');
+                    
+                    const elementName = e.dataTransfer.getData('text/plain');
+                    if (elementName) {
+                        addElementToDropZone(zone, elementName);
+                    }
+                });
+            });
+        }
+
+        // Add element to drop zone
+        function addElementToDropZone(zone, elementName) {
+            if (zone.querySelector('.element')) {
+                clearDropZone(zone);
+            }
+            
+            const element = createElement(elementName, false);
+            zone.appendChild(element);
+            zone.classList.add('has-element');
+            
+            // Make element draggable from drop zone
+            element.setAttribute('draggable', 'true');
+            element.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', elementName);
+            });
+        }
+
+        // Clear drop zone
+        function clearDropZone(zone) {
+            const element = zone.querySelector('.element');
+            if (element) {
+                element.remove();
+            }
+            zone.classList.remove('has-element');
+        }
+
+        // Combine elements
+        function combineElements() {
+            const element1 = dropZone1.querySelector('.element');
+            const element2 = dropZone2.querySelector('.element');
+            
+            if (!element1 || !element2) {
+                showMessage('Please add two elements to combine', 'error');
+                return;
+            }
+            
+            const name1 = element1.textContent;
+            const name2 = element2.textContent;
+            
+            // Try both combinations
+            const combination1 = `${name1}+${name2}`;
+            const combination2 = `${name2}+${name1}`;
+            
+            let result = combinations[combination1] || combinations[combination2];
+            
+            if (result) {
+                // Success - new element created
+                const newElement = result.name;
+                
+                // Check if already discovered
+                if (!gameState.discoveredElements.includes(newElement)) {
+                    gameState.discoveredElements.push(newElement);
+                    gameState.userElements.push({
+                        name: newElement,
+                        rarity: result.rarity,
+                        description: result.description
+                    });
+                    
+                    // Add XP based on rarity
+                    const xpGained = getXpForRarity(result.rarity);
+                    addXp(xpGained);
+                    
+                    // Add score
+                    const scoreGained = getScoreForRarity(result.rarity);
+                    gameState.score += scoreGained;
+                    gameState.sessionScore += scoreGained;
+                    
+                    showMessage(`Success! You created ${newElement}`, 'success');
+                    newElementDisplay.textContent = newElement;
+                    
+                    // Check for special effects
+                    if (result.specialEffect === 'rainbow') {
+                        activateRainbowMode();
+                        gameState.rainbowMode = true;
+                        showMessage('AMAZING! You unlocked Rainbow Mode!', 'success');
+                    }
+                    
+                    // Add special effects
+                    createSpecialEffects();
+                } else {
+                    showMessage(`You already have ${newElement}`, 'error');
+                    newElementDisplay.textContent = '';
+                }
+                
+                gameState.combinationsMade++;
+                updateStats();
+                renderElements();
+                
+                // Clear drop zones
+                clearDropZone(dropZone1);
+                clearDropZone(dropZone2);
+            } else {
+                // No combination found
+                showMessage('These elements cannot be combined', 'error');
+                newElementDisplay.textContent = '';
+            }
+        }
+
+        // Activate rainbow mode
+        function activateRainbowMode() {
+            document.body.classList.add('rainbow-mode');
+            
+            // Add rainbow effect to all elements
+            const allElements = document.querySelectorAll('.element');
+            allElements.forEach(element => {
+                element.classList.add('rainbow-mode');
+            });
+            
+            // Add rainbow effect to drop zones
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                zone.classList.add('rainbow-mode');
+            });
+            
+            // Add rainbow effect to combine button
+            combineBtn.classList.add('rainbow-mode');
+        }
+
+        // Get XP for rarity
+        function getXpForRarity(rarity) {
+            switch(rarity) {
+                case 'common': return 5;
+                case 'uncommon': return 10;
+                case 'rare': return 20;
+                case 'epic': return 40;
+                case 'legendary': return 80;
+                case 'mythical': return 160;
+                case 'gold': return 200;
+                case 'diamond': return 400;
+                case 'elemental': return 1000;
+                case 'dem-studios': return 200;
+                case 'studio-14592': return 200;
+                default: return 5;
+            }
+        }
+
+        // Get score for rarity
+        function getScoreForRarity(rarity) {
+            switch(rarity) {
+                case 'common': return 1;
+                case 'uncommon': return 2;
+                case 'rare': return 5;
+                case 'epic': return 10;
+                case 'legendary': return 25;
+                case 'mythical': return 50;
+                case 'gold': return 100;
+                case 'diamond': return 250;
+                case 'elemental': return 1000;
+                case 'dem-studios': return 100;
+                case 'studio-14592': return 100;
+                default: return 1;
+            }
+        }
+
+        // Add XP and handle level ups
+        function addXp(amount) {
+            gameState.xp += amount;
+            const xpForNextLevel = gameState.level * 100;
+            
+            if (gameState.xp >= xpForNextLevel) {
+                gameState.level++;
+                gameState.xp = gameState.xp - xpForNextLevel;
+                showMessage(`Level Up! You reached level ${gameState.level}`, 'success');
+            }
+            
+            updateXpBar();
+        }
+
+        // Update XP bar
+        function updateXpBar() {
+            const xpForNextLevel = gameState.level * 100;
+            const xpPercentage = (gameState.xp / xpForNextLevel) * 100;
+            
+            currentXpEl.textContent = gameState.xp;
+            nextLevelXpEl.textContent = xpForNextLevel;
+            xpProgressEl.style.width = `${xpPercentage}%`;
+            playerLevelEl.textContent = gameState.level;
+        }
+
+        // Roll dice
+        function rollDice() {
+            const now = Date.now();
+            const timeSinceLastRoll = now - gameState.lastDiceRoll;
+            
+            // Check if 10 seconds have passed (changed from 5 minutes)
+            if (timeSinceLastRoll < 10000 && gameState.lastDiceRoll !== 0) {
+                const timeLeft = 10000 - timeSinceLastRoll;
+                const secondsLeft = Math.ceil(timeLeft / 1000);
+                showMessage(`Please wait ${secondsLeft} second(s) before rolling again`, 'error');
+                return;
+            }
+            
+            // Roll the dice
+            const diceResult = Math.floor(Math.random() * 6) + 1;
+            const reward = diceRewards[Math.floor(Math.random() * diceRewards.length)];
+            
+            // Update game state
+            gameState.lastDiceRoll = now;
+            gameState.diceRolls.push({
+                time: now,
+                result: diceResult,
+                reward: reward.name
+            });
+            
+            // Show dice animation
+            const diceResultEl = document.getElementById('dice-result');
+            diceResultEl.textContent = getDiceEmoji(diceResult);
+            diceResultEl.style.animation = 'none';
+            setTimeout(() => {
+                diceResultEl.style.animation = 'dice-spin 0.5s ease-in-out';
+            }, 10);
+            
+            // Process reward
+            processDiceReward(reward);
+            
+            // Update timer
+            updateDiceTimer();
+            
+            // Save game state
+            saveGameState();
+        }
+
+        // Get dice emoji
+        function getDiceEmoji(value) {
+            switch(value) {
+                case 1: return '⚀';
+                case 2: return '⚁';
+                case 3: return '⚂';
+                case 4: return '⚃';
+                case 5: return '⚄';
+                case 6: return '⚅';
+                default: return '🎲';
+            }
+        }
+
+        // Process dice reward
+        function processDiceReward(reward) {
+            // Create reward card
+            const card = document.createElement('div');
+            card.className = 'dice-card';
+            
+            if (reward.element) {
+                // Element reward
+                card.innerHTML = `
+                    <h4>${reward.name}</h4>
+                    <p>${reward.description}</p>
+                    <p><strong>Rarity: ${reward.rarity}</strong></p>
+                    <button class="use-btn">Add to Inventory</button>
+                `;
+                
+                card.querySelector('.use-btn').addEventListener('click', () => {
+                    // Add element to inventory
+                    if (!gameState.discoveredElements.includes(reward.element)) {
+                        gameState.discoveredElements.push(reward.element);
+                        gameState.userElements.push({
+                            name: reward.element,
+                            rarity: reward.rarity,
+                            description: reward.description
+                        });
+                        
+                        showMessage(`Added ${reward.element} to your inventory!`, 'success');
+                        renderElements();
+                        updateStats();
+                        card.remove();
+                    } else {
+                        showMessage(`You already have ${reward.element}`, 'error');
+                    }
+                });
+            } else if (reward.type === 'xp') {
+                // XP reward
+                card.innerHTML = `
+                    <h4>${reward.name}</h4>
+                    <p>${reward.description}</p>
+                    <button class="use-btn">Claim XP</button>
+                `;
+                
+                card.querySelector('.use-btn').addEventListener('click', () => {
+                    addXp(reward.value);
+                    showMessage(`Gained ${reward.value} XP!`, 'success');
+                    card.remove();
+                });
+            } else if (reward.type === 'points') {
+                // Points reward
+                card.innerHTML = `
+                    <h4>${reward.name}</h4>
+                    <p>${reward.description}</p>
+                    <button class="use-btn">Claim Points</button>
+                `;
+                
+                card.querySelector('.use-btn').addEventListener('click', () => {
+                    gameState.score += reward.value;
+                    gameState.sessionScore += reward.value;
+                    showMessage(`Gained ${reward.value} points!`, 'success');
+                    updateStats();
+                    card.remove();
+                });
+            } else if (reward.type === 'charm') {
+                // Charm reward (placeholder)
+                card.innerHTML = `
+                    <h4>${reward.name}</h4>
+                    <p>${reward.description}</p>
+                    <button class="use-btn">Activate Charm</button>
+                `;
+                
+                card.querySelector('.use-btn').addEventListener('click', () => {
+                    showMessage('Lucky charm activated! Your next combination has increased rarity chance.', 'success');
+                    card.remove();
+                });
+            }
+            
+            diceCardsContainer.appendChild(card);
+        }
+
+        // Update dice timer
+        function updateDiceTimer() {
+            const now = Date.now();
+            const timeSinceLastRoll = now - gameState.lastDiceRoll;
+            
+            if (timeSinceLastRoll < 10000 && gameState.lastDiceRoll !== 0) {
+                const timeLeft = 10000 - timeSinceLastRoll;
+                const secondsLeft = Math.ceil(timeLeft / 1000);
+                diceTimer.textContent = `Next roll in ${secondsLeft} second(s)`;
+                diceBtn.disabled = true;
+                
+                // Update timer every second
+                setTimeout(updateDiceTimer, 1000);
+            } else {
+                diceTimer.textContent = 'Ready to roll!';
+                diceBtn.disabled = false;
+            }
+        }
+
+        // Create special effects
+        function createSpecialEffects() {
+            const effect = document.createElement('div');
+            effect.className = 'special-effects';
+            effect.style.left = `${Math.random() * window.innerWidth}px`;
+            effect.style.top = `${Math.random() * window.innerHeight}px`;
+            effect.style.background = `radial-gradient(circle, rgba(0,100,255,0.7) 0%, rgba(0,0,0,0) 70%)`;
+            effect.style.width = '100px';
+            effect.style.height = '100px';
+            
+            document.body.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 1000);
+        }
+
+        // Show message
+        function showMessage(message, type) {
+            resultMessage.textContent = message;
+            resultMessage.className = `message ${type}`;
+            
+            setTimeout(() => {
+                resultMessage.className = '';
+            }, 3000);
+        }
+
+        // Render elements
+        function renderElements() {
+            // Clear containers
+            userElementsContainer.innerHTML = '';
+            allElementsContainer.innerHTML = '';
+            
+            // Add user elements
+            gameState.userElements.forEach(element => {
+                const elementEl = createElement(element.name, true, element.rarity, element.description);
+                userElementsContainer.appendChild(elementEl);
+            });
+            
+            // Add all elements (view only)
+            const allElements = [...starterElements, ...gameState.userElements];
+            allElements.forEach(element => {
+                const elementEl = createElement(element.name, false, element.rarity, element.description);
+                allElementsContainer.appendChild(elementEl);
+            });
+        }
+
+        // Create element DOM element
+        function createElement(name, draggable = true, rarity = 'common', description = '') {
+            const element = document.createElement('div');
+            element.className = `element ${rarity}`;
+            element.textContent = name;
+            
+            // Create tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'element-tooltip';
+            tooltip.innerHTML = `
+                <strong>${name}</strong><br>
+                Rarity: ${rarity}<br>
+                Difficulty: ${getDifficultyForRarity(rarity)}<br>
+                ${description}
+            `;
+            element.appendChild(tooltip);
+            
+            if (draggable) {
+                element.setAttribute('draggable', 'true');
+                element.addEventListener('dragstart', e => {
+                    e.dataTransfer.setData('text/plain', name);
+                });
+                
+                // Click to add to drop zone
+                element.addEventListener('click', () => {
+                    if (!dropZone1.querySelector('.element')) {
+                        addElementToDropZone(dropZone1, name);
+                    } else if (!dropZone2.querySelector('.element')) {
+                        addElementToDropZone(dropZone2, name);
+                    } else {
+                        showMessage('Both drop zones are full. Clear one first.', 'error');
+                    }
+                });
+            } else {
+                element.classList.add('view-only');
+            }
+            
+            // Add rarity badge for rare+ elements
+            if (rarity !== 'common') {
+                const badge = document.createElement('div');
+                badge.className = 'rarity-badge';
+                badge.textContent = rarity.charAt(0).toUpperCase();
+                element.appendChild(badge);
+            }
+            
+            return element;
+        }
+
+        // Get difficulty for rarity
+        function getDifficultyForRarity(rarity) {
+            switch(rarity) {
+                case 'common': return 'Easy';
+                case 'uncommon': return 'Medium';
+                case 'rare': return 'Hard';
+                case 'epic': return 'Very Hard';
+                case 'legendary': return 'Extreme';
+                case 'mythical': return 'Legendary';
+                case 'gold': return 'Mythic';
+                case 'diamond': return 'Godlike';
+                case 'elemental': return 'Impossible';
+                case 'dem-studios': return 'Secret';
+                case 'studio-14592': return 'Secret';
+                default: return 'Easy';
+            }
+        }
+
+        // Update stats
+        function updateStats() {
+            totalElementsEl.textContent = Object.keys(combinations).length + starterElements.length;
+            userElementsEl.textContent = gameState.userElements.length;
+            combinationsEl.textContent = gameState.combinationsMade;
+            sessionScoreEl.textContent = gameState.sessionScore;
+            
+            elementsCountEl.textContent = gameState.userElements.length;
+            combinationsCountEl.textContent = gameState.combinationsMade;
+            userScoreEl.textContent = gameState.score;
+            
+            updateXpBar();
+        }
+
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('infiniteCraftSave', JSON.stringify(gameState));
+            showMessage('Game progress saved!', 'success');
+        }
+
+        // Load game state from localStorage
+        function loadGameState() {
+            const saved = localStorage.getItem('infiniteCraftSave');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    gameState = { ...gameState, ...parsed };
+                    showMessage('Game progress loaded!', 'success');
+                } catch (e) {
+                    console.error('Failed to load game state:', e);
+                    showMessage('Failed to load saved game', 'error');
+                }
+            } else {
+                // Initialize with starter elements
+                gameState.userElements = [...starterElements];
+                gameState.discoveredElements = starterElements.map(e => e.name);
+            }
+        }
+
+        // Export game data as JSON
+        function exportGameData() {
+            const dataStr = JSON.stringify(gameState, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'infinite-craft-save.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showMessage('Game data exported!', 'success');
+        }
+
+        // Reset game
+        function resetGame() {
+            if (confirm('Are you sure you want to reset your progress? This cannot be undone.')) {
+                gameState = {
+                    userElements: [...starterElements],
+                    discoveredElements: starterElements.map(e => e.name),
+                    combinationsMade: 0,
+                    score: 0,
+                    xp: 0,
+                    level: 1,
+                    diceRolls: [],
+                    lastDiceRoll: 0,
+                    sessionScore: 0,
+                    rainbowMode: false
+                };
+                
+                localStorage.removeItem('infiniteCraftSave');
+                renderElements();
+                updateStats();
+                clearDropZone(dropZone1);
+                clearDropZone(dropZone2);
+                newElementDisplay.textContent = '';
+                resultMessage.textContent = 'Drag two elements to the boxes above and click Combine!';
+                
+                // Remove rainbow mode
+                document.body.classList.remove('rainbow-mode');
+                const rainbowElements = document.querySelectorAll('.rainbow-mode');
+                rainbowElements.forEach(el => {
+                    el.classList.remove('rainbow-mode');
+                });
+                
+                showMessage('Game reset!', 'success');
+            }
+        }
+
+        // Initialize the game when page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+        
+        // Auto-save when page is about to unload
+        window.addEventListener('beforeunload', saveGameState);
+    </script>
+</body>
+</html>
